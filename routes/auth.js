@@ -53,17 +53,17 @@ router.post('/login', [
     if(!errors.isEmpty) {
         return res.status(400).json({errors: errors.array()})
     }
-
     const {email, password} = req.body;
     try {
+        let success = false
         let user = await User.findOne({email});
         if(!user) {
-            return res.status(400).json({error:"Please try to login with correct credentials"})
+            return res.status(400).json({success, error:"Please try to login with correct credentials"})
         }
 
         const passComp = await bcrypt.compare(password, user.password)
         if(!passComp){
-            return res.status(400).json({error:"Please try to login with correct credentials"})
+            return res.status(400).json({success, error:"Please try to login with correct credentials"})
         }
 
         const data = {
@@ -72,8 +72,9 @@ router.post('/login', [
             }
         }
         const authToken = jwt.sign(data, process.env.SECRET)
+        success = true
         // console.log(jwtData)
-        res.json({authToken})
+        res.json({success, authToken})
     } catch(error) {
         console.error(error.message);
         res.status(500).send("Internal Server Error")

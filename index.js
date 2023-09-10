@@ -9,7 +9,7 @@ dotenv.config()
 
 connectToMongo();
 
-app.use(cors)
+app.use(cors())
 app.use(express.json())
 //Available Routes
 app.use('/auth', auth)

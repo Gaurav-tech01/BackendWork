@@ -18,9 +18,10 @@ router.post('/createuser', [
         return res.status(400).json({ err: err.array() })
     }
     try {
+        let success = false
         let user = await User.findOne({ email: req.body.email })
         if (user) {
-            return res.status(400).json({ error: "Sorry a user already exists" })
+            return res.status(400).json({ success,error: "Sorry a user already exists" })
         }
         const salt = await bcrypt.genSalt(10)
         const secPass = await bcrypt.hash(req.body.password, salt)
@@ -35,8 +36,9 @@ router.post('/createuser', [
             }
         }
         const authToken = jwt.sign(data, process.env.SECRET)
+        success = true
         // console.log(jwtData)
-        res.json({authToken})
+        res.json({success,authToken})
     }
     catch (error) {
         console.error(error.message);
